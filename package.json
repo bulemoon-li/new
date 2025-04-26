@@ -1,14 +1,13 @@
 {
-  "name": "baidu-map-worker",
+  "name": "new",
   "version": "1.0.0",
-  "private": true,
+  "description": "",
+  "main": "main.js",
   "scripts": {
-    "deploy": "wrangler deploy"
-  },
-  "dependencies": {
-    "@cloudflare/workers-types": "^4.0.0"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "devDependencies": {
-    "wrangler": "^3.0.0"
+    "electron": "^35.1.2"
   }
 }

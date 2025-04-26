@@ -1,11 +1,12 @@
-name = "baidu-map-worker"
-main = "worker.js"
-compatibility_date = "2024-01-01"
 
-[build]
-upload = { format = "modules", dir = "dist" }
+name = "finally"
 
-[env.production]
-vars = { 
-  BAIDU_MAP_AK = "JZuvbNx4cfx93AxyCVhqe513OQb7o2Kk"
-}
+compatibility_date = "2024-04-26"
+
+account_id = "b159694ffad3fa004ddd01005ea2c957"
+
+worker_dev = true
+
+
+[assets]
+directory = "./dist"
