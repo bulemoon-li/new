@@ -1,223 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>地图寻点游戏</title>
+    <title>寻迹游戏</title>
+    <!-- 引入百度地图 API -->
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=JZuvbNx4cfx93AxyCVhqe513OQb7o2Kk"></script>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
         #map {
             width: 100%;
-            height: 100vh;
-        }
-
-        #popupImage {
-            display: none;
-            max-width: 50%;
-            max-height: 50%;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-        }
-
-        #fight-effect {
-            display: none;
-            width: 400px;
-            height: 400px;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            padding: 20px;
-            box-sizing: border-box;
-            animation: fadeInScale 0.5s ease-out;
-        }
-
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        #fight-effect div {
-            width: 100%;
             height: 100%;
-            background-image: url('3.gif');
-            background-size: cover;
-            background-position: center;
         }
     </style>
-    <!-- 引入高德地图 API，需替换为你的 Key -->
-    <script src="https://webapi.amap.com/maps?v=2.0&key=89f004d9b3056e3e5160975863f6c610"></script>
 </head>
-
 <body>
     <div id="map"></div>
-    <img id="popupImage" src="3.gif" alt="弹出图片">
-    <script>
-        let map;
-        let pointA;
-        let pointB;
-        let markerA;
-        let markerB;
-        const popupImage = document.getElementById('popupImage');
-        const iconSize = 32; // 标记点图标的尺寸，根据实际情况修改
-
-        // 甘肃省兰州市西北民族大学榆中校区经纬度
-        const yuzhongCampusLngLat = [104.157703, 35.935098];
-        // 甘肃省兰州市西北民族大学西北新村校区经纬度
-        const xibeiXincunCampusLngLat = [103.819419, 36.044262];
-
-        function initMap() {
-            console.log('开始初始化地图');
-            // 初始化高德地图，设置中心点为榆中校区
-            map = new AMap.Map('map', {
-                zoom: 13, // 适当调整缩放级别以更好展示两个校区
-                center: yuzhongCampusLngLat
-            });
-
-            // 初始位置设为榆中校区
-            pointA = yuzhongCampusLngLat;
-            // 目的地设为西北新村校区
-            pointB = xibeiXincunCampusLngLat;
-
-            if (markerA) {
-                markerA.setMap(null);
-            }
-            if (markerB) {
-                markerB.setMap(null);
-            }
-
-            const iconA = new AMap.Icon({
-                image: '1.jpg', // 图片1对应榆中校区
-                size: new AMap.Size(iconSize, iconSize),
-                imageSize: new AMap.Size(iconSize, iconSize)
-            });
-            markerA = new AMap.Marker({
-                position: pointA,
-                icon: iconA
-            });
-            markerA.setMap(map);
-
-            const iconB = new AMap.Icon({
-                image: '2.jpg', // 图片2对应西北新村校区
-                size: new AMap.Size(iconSize, iconSize),
-                imageSize: new AMap.Size(iconSize, iconSize)
-            });
-            markerB = new AMap.Marker({
-                position: pointB,
-                icon: iconB
-            });
-            markerB.setMap(map);
-
-            // 鼠标点击控制 markerA
-            map.on('click', function (e) {
-                const clickedLngLat = e.lnglat;
-                pointA = [clickedLngLat.lng, clickedLngLat.lat];
-                markerA.setPosition(pointA);
-                checkCollision();
-            });
-
-            // 键盘控制 markerB
-            document.addEventListener('keydown', function (e) {
-                const step = 0.001;
-                let newPoint;
-                switch (e.key.toLowerCase()) {
-                    case 'd':
-                        newPoint = [pointB[0] + step, pointB[1]];
-                        break;
-                    case 'a':
-                        newPoint = [pointB[0] - step, pointB[1]];
-                        break;
-                    case's':
-                        newPoint = [pointB[0], pointB[1] - step];
-                        break;
-                    case 'w':
-                        newPoint = [pointB[0], pointB[1] + step];
-                        break;
-                    default:
-                        return;
-                }
-                if (newPoint) {
-                    pointB = newPoint;
-                    markerB.setPosition(newPoint);
-                    checkCollision();
-                }
-            });
-
-            // 监听Esc键按下事件
-            document.addEventListener('keydown', function (e) {
-                console.log('检测到按键按下，按键为：', e.key);
-                if (e.key === 'Escape') {
-                    const fightEffect = document.getElementById('fight-effect');
-                    if (fightEffect) {
-                        console.log('检测到特效元素，准备关闭');
-                        fightEffect.style.display = 'none';
-                        const parent = fightEffect.parentNode;
-                        if (parent) {
-                            try {
-                                parent.removeChild(fightEffect);
-                                console.log('特效元素已成功移除');
-                            } catch (error) {
-                                console.error('移除特效元素时出错:', error);
-                            }
-                        } else {
-                            console.error('特效元素的.parentNode为null');
-                        }
-                        console.log('将标记点重置为初始位置');
-                        // 将标记点重置为初始位置
-                        pointA = yuzhongCampusLngLat;
-                        pointB = xibeiXincunCampusLngLat;
-                        markerA.setPosition(pointA);
-                        markerB.setPosition(pointB);
-                    } else {
-                        console.log('未检测到特效元素，无需关闭');
-                    }
-                }
-            });
-        }
-
-        function getIconRadiusDistance() {
-            const center = map.getCenter();
-            const offset = map.lngLatToPixel(center);
-            const offsetRight = new AMap.Pixel(offset.x + iconSize / 2, offset.y);
-            const lngLatRight = map.pixelToLngLat(offsetRight);
-            return AMap.GeometryUtil.distance([center.lng, center.lat], [lngLatRight.lng, lngLatRight.lat]);
-        }
-
-        function checkCollision() {
-            // 计算两点间的实际距离
-            const distance = AMap.GeometryUtil.distance(pointA, pointB);
-            // 计算图标半径对应的距离
-            const iconRadiusDistance = getIconRadiusDistance();
-            // 当两点距离小于两个图标半径之和时，认为图标边缘碰撞
-            if (distance < 2 * iconRadiusDistance) {
-                console.log('检测到碰撞，显示特效');
-                showFightEffect();
-            }
-        }
-
-        function showFightEffect() {
-            const fightEffect = document.createElement('div');
-            fightEffect.id = 'fight-effect';
-            const fightElement = document.createElement('div');
-            fightEffect.appendChild(fightElement);
-            document.body.appendChild(fightEffect);
-            fightEffect.style.display = 'block';
-        }
-
-        window.onload = initMap;
-    </script>
+    <script src="main.js"></script>
 </body>
-
 </html>

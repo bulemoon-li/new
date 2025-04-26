@@ -150,7 +150,7 @@ window.onload = function () {
     // 添加图片元素
     const specialEffectImg = document.createElement('img');
     specialEffectImg.id = 'special-effect-img';
-    specialEffectImg.src = 'F:\code\feipinshiyan\finaltry\public\3.gif'; // 请替换为实际的图片 URL
+    specialEffectImg.src = '3.gif'; // 请替换为实际的图片 URL
     specialEffectImg.style.display = 'none';
     specialEffectImg.style.position = 'fixed';
     specialEffectImg.style.top = '50%';
