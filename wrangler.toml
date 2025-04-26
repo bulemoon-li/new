@@ -1,0 +1,11 @@
+name = "baidu-map-worker"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[build]
+upload = { format = "modules", dir = "dist" }
+
+[env.production]
+vars = { 
+  BAIDU_MAP_AK = "JZuvbNx4cfx93AxyCVhqe513OQb7o2Kk"
+}
